@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nomean.rating.api.game.GameMapping">
+    <resultMap id="game" type="com.nomean.rating.api.game.GameVO">
+        <id property="id" column="game_id"/>
+        <result property="maxNumber" column="max_num"/>
+        <result property="minNumber" column="min_num"/>
+    </resultMap>
+
+    <select id="getGameList" resultMap="game">
+            SELECT *
+            from games
+    </select>
+
+
+    <insert id="addGame">
+        INSERT INTO games(name, min_num, max_num) values(#{name}, #{minNumber}, #{maxNumber})
+    </insert>
+</mapper>
