@@ -8,8 +8,17 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/v1/games")
 class GameController(private val service: GameService) {
 
+//    @GetMapping("")
+//    fun getGameList(): GameListVO {
+//        val result = service.getGameList()
+//        println(result)
+//        return GameListVO(result)
+//    }
+
     @GetMapping("")
     fun getGameList(): List<GameVO> {
-        return service.getGameList()
+        val result = service.getGameList()
+        println(result)
+        return result
     }
 }
