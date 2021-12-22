@@ -11,6 +11,8 @@ import org.springframework.restdocs.cli.CliDocumentation.curlRequest
 import org.springframework.restdocs.http.HttpDocumentation.httpRequest
 import org.springframework.restdocs.http.HttpDocumentation.httpResponse
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
+import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
+import org.springframework.restdocs.operation.preprocess.Preprocessors.removeHeaders
 import org.springframework.restdocs.payload.ResponseFieldsSnippet
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.web.WebAppConfiguration
@@ -41,8 +43,9 @@ open class DocConfigure : Configure() {
     private val documentConfigure by lazy {
         MockMvcRestDocumentation.documentationConfiguration(this.restDocumentation).apply {
             operationPreprocessors()
-                .withRequestDefaults(org.springframework.restdocs.operation.preprocess.Preprocessors.removeHeaders("Host"))
-                .withResponseDefaults(org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint())
+                .withRequestDefaults(prettyPrint())
+                .withRequestDefaults(removeHeaders("Host"))
+                .withResponseDefaults(prettyPrint())
         }.apply {
             uris()
                 .withScheme("http")

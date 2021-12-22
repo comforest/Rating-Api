@@ -1,8 +1,17 @@
 === {{title}}
-{{method}} {{path}}
+{{description}}
 
-include::curl-request.adoc[]
-include::http-request.adoc[]
-include::http-response.adoc[]
+----
+{{method}} {{path}}
+----
+
 {{#request_field}}include::request-fields.adoc[]{{/request_field}}
 {{#response_field}}include::response-fields.adoc[]{{/response_field}}
+==== request example
+include::http-request.adoc[]
+
+==== response example
+include::http-response.adoc[]
+
+==== curl example
+include::curl-request.adoc[]
