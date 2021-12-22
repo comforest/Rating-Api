@@ -1,7 +1,9 @@
 = index
+:toc: left
+:toclevels: 2
 
-== get index
+== Auth
 
-include::{snippets}/index/curl-request.adoc[]
-include::{snippets}/index/http-request.adoc[]
-include::{snippets}/index/http-response.adoc[]
+include::{snippets}/auth/naver/main.adoc[]
+
+include::{snippets}/auth/kakao/main.adoc[]

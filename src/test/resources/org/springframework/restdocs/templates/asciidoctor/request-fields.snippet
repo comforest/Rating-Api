@@ -1,0 +1,13 @@
+===== Request Fields
+
+[cols="4,2,7",options=header]
+|===
+|필드명 ([red]#*# 필수)|타입|설명
+
+{{#fields}}
+|{{#tableCellContent}}`++{{path}}++{{^optional}} [red]#*#{{/optional}}`{{/tableCellContent}}
+|{{#tableCellContent}}`+{{type}}+`{{/tableCellContent}}
+|{{#tableCellContent}}{{description}}{{/tableCellContent}}
+{{/fields}}
+
+|===

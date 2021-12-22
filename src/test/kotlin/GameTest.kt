@@ -9,6 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.restdocs.RestDocumentationExtension
+import org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel
+import org.springframework.restdocs.hypermedia.HypermediaDocumentation.links
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get
 import org.springframework.test.context.ContextConfiguration
@@ -17,8 +19,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import javax.inject.Inject
 import javax.sql.DataSource
 
-@ExtendWith(RestDocumentationExtension::class)
-@ContextConfiguration("file:src/main/webapp/WEB-INF/dispatcher-servlet.xml")
 class GameTest : DocConfigure() {
 
     @Autowired
