@@ -1,9 +1,10 @@
 package com.nomean.rating.api.auth
 
 import com.nomean.rating.api.auth.dto.AccessTokenVo
-import com.nomean.rating.api.auth.dto.UserAuthVO
-import org.springframework.beans.factory.annotation.Autowired
+import com.nomean.rating.api.auth.dto.ThirdPartyTokenVo
+import com.nomean.rating.api.util.JwtUtil
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -12,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController
 class AuthController (private val service: AuthService, private val jwtUtil: JwtUtil) {
 
     @PostMapping("/login")
-    fun login(): AccessTokenVo {
-        val user = service.login("naver", "TOKEN_NAVER")
-        val jwt = jwtUtil.createToken(UserAuthVO(user.id))
-        return AccessTokenVo(jwt)
+    fun login(@RequestBody thirdPartyTokenVo: ThirdPartyTokenVo): AccessTokenVo {
+        val userInfo = service.login(thirdPartyTokenVo)
+
+        return AccessTokenVo("", "")
     }
 
 

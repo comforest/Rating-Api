@@ -3,6 +3,7 @@ package auth
 import Configure
 import com.nomean.rating.api.auth.AuthService
 import com.nomean.rating.api.auth.ThirdPartAuth
+import com.nomean.rating.api.auth.dto.ThirdPartyTokenVo
 import com.nomean.rating.api.auth.dto.UserInfoVo
 import com.nomean.rating.api.auth.internal.KakaoAuth
 import com.nomean.rating.api.auth.internal.NaverAuth
@@ -51,13 +52,13 @@ class AuthServiceTest : Configure() {
             ) { resource ->
                 context(resource) {
                     it("로그인 성공") {
-                        val user = service.login(resource, "$resource-Success")
+                        val user = service.login(ThirdPartyTokenVo(resource, "$resource-Success"))
                         user shouldBe this@AuthServiceTest.user
                     }
 
                     it("로그인 실패 - Token Invalid") {
                         shouldThrow<Exception> {
-                            service.login(resource, "Success")
+                            service.login(ThirdPartyTokenVo(resource, "Success"))
                         }
                     }
                 }
@@ -66,7 +67,7 @@ class AuthServiceTest : Configure() {
             context("Wrong Resource") {
                 it("로그인 실패") {
                     shouldThrow<Exception> {
-                        service.login("resource", "Success")
+                        service.login(ThirdPartyTokenVo("resource", "Success"))
                     }
                 }
             }

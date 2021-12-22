@@ -1,8 +1,8 @@
 package auth
 
 import Configure
-import com.nomean.rating.api.auth.JwtUtil
-import com.nomean.rating.api.auth.dto.UserAuthVO
+import com.nomean.rating.api.auth.dto.JwtPayloadVo
+import com.nomean.rating.api.util.JwtUtil
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -32,7 +32,7 @@ class JwtUtilTest : Configure() {
             it("랜덤한 유저 Token 생성 (총 100)") {
                 val random = Random(currentTimeMillis())
                 for (i in 1..100) {
-                    val authData = UserAuthVO(random.nextInt())
+                    val authData = JwtPayloadVo(random.nextInt())
                     val expireTime = abs(random.nextInt() % 30 + 30) * 1000 * 60 * 60 * 24L
                     val token = jwt.createToken(authData, expireTime)
 
@@ -53,7 +53,7 @@ class JwtUtilTest : Configure() {
         }
         describe("JWT 검증 Test") {
             context("Success") {
-                val user = UserAuthVO(1)
+                val user = JwtPayloadVo(1)
                 val token = createToken(key, user.id, 60 * 1000L)
 
                 it("validateToken") {
@@ -65,7 +65,7 @@ class JwtUtilTest : Configure() {
                 }
             }
             context("ExpireDate Fail") {
-                val user = UserAuthVO(1)
+                val user = JwtPayloadVo(1)
                 val token = createToken(key, user.id, -1)
 
                 it("validateToken") {
@@ -80,7 +80,7 @@ class JwtUtilTest : Configure() {
             context("다른 키 사용 Fail") {
                 val faultKey = Keys.secretKeyFor(SignatureAlgorithm.HS256)
 
-                val user = UserAuthVO(1)
+                val user = JwtPayloadVo(1)
                 val token = createToken(faultKey, user.id, -1)
 
                 it("validateToken") {

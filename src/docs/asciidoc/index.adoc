@@ -4,6 +4,4 @@
 
 == Auth
 
-include::{snippets}/auth/naver/main.adoc[]
-
-include::{snippets}/auth/kakao/main.adoc[]
+include::{snippets}/auth/login/main.adoc[]

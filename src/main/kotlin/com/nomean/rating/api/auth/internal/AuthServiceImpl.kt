@@ -1,8 +1,10 @@
 package com.nomean.rating.api.auth.internal
 
+import com.nomean.rating.api.RequestInvalidException
 import com.nomean.rating.api.auth.AuthService
 import com.nomean.rating.api.auth.ThirdPartAuth
 import com.nomean.rating.api.auth.dto.AccessTokenVo
+import com.nomean.rating.api.auth.dto.ThirdPartyTokenVo
 import com.nomean.rating.api.auth.dto.UserInfoVo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -13,9 +15,9 @@ class AuthServiceImpl @Autowired constructor(
     private val auth: Map<String, ThirdPartAuth>
 ) : AuthService {
 
-    override fun login(resource: String, token: String): UserInfoVo {
-        val authManager = auth["${resource}Auth"] ?: throw java.lang.Exception()
-        return authManager.getUserInfo(token) ?: throw java.lang.Exception()
+    override fun login(tokenDto: ThirdPartyTokenVo): UserInfoVo {
+        val authManager = auth["${tokenDto.resource}Auth"] ?: throw RequestInvalidException()
+        return authManager.getUserInfo(tokenDto.token) ?: throw RequestInvalidException()
     }
 
     override fun withdraw(userId: Int) {

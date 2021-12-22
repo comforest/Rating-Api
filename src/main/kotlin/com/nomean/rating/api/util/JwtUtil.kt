@@ -1,6 +1,6 @@
-package com.nomean.rating.api.auth
+package com.nomean.rating.api.util
 
-import com.nomean.rating.api.auth.dto.UserAuthVO
+import com.nomean.rating.api.auth.dto.JwtPayloadVo
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.JwtException
@@ -23,7 +23,7 @@ class JwtUtil {
 
 
 
-    fun createToken(data: UserAuthVO, time: Long = 3600000): String {
+    fun createToken(data: JwtPayloadVo, time: Long = 3600000): String {
         val expireDate = Date()
         expireDate.time += time
 
@@ -44,12 +44,12 @@ class JwtUtil {
         }
     }
 
-    fun extractPayload(token: String): UserAuthVO? {
+    fun extractPayload(token: String): JwtPayloadVo? {
         return try {
             val jwt = readToken(token)
             val payload = jwt.body
 
-            UserAuthVO(payload["id"] as Int)
+            JwtPayloadVo(payload["id"] as Int)
         } catch (e: JwtException) {
             null
         } catch (e: ClassCastException) {

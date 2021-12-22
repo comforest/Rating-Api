@@ -2,11 +2,24 @@ package auth
 
 import DocConfigure
 import DocSnippet
+import com.nomean.rating.api.RequestInvalidException
+import com.nomean.rating.api.auth.AuthController
 import com.nomean.rating.api.auth.AuthService
+import com.nomean.rating.api.auth.dto.AccessTokenVo
+import com.nomean.rating.api.auth.dto.ThirdPartyTokenVo
 import com.nomean.rating.api.auth.dto.UserInfoVo
+import com.nomean.rating.api.util.JsonUtil
+import com.nomean.rating.api.util.JwtUtil
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.Spec
+import io.kotest.data.forAll
+import io.kotest.data.row
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.mockk
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post
@@ -17,14 +30,17 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 class AuthControllerTest : DocConfigure() {
 
-//    @Autowired
-//    @InjectMockKs(injectImmutable = true, overrideValues = true)
-//    private lateinit var controller: AuthController
+    @Autowired
+    @InjectMockKs(injectImmutable = true, overrideValues = true)
+    private lateinit var controller: AuthController
+
+    @Autowired
+    private lateinit var jwtUtil: JwtUtil
 
     private val service: AuthService = mockk(relaxed = true)
 
-    var descriptionSnippet: DocSnippet =
-        DocSnippet("Returns all workspaces for the authenticated profile.")
+    private val tokenNaver = ThirdPartyTokenVo("naver", "TOKEN_NAVER")
+    private val tokenKakao = ThirdPartyTokenVo("kakao", "TOKEN_KAKAO")
 
     private val userNaver = UserInfoVo(1, "naver user")
     private val userKakao = UserInfoVo(2, "kakao user")
@@ -32,56 +48,66 @@ class AuthControllerTest : DocConfigure() {
     override fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)
 
-        every { service.login(any(), any()) } throws Exception()
-        every { service.login("naver", TOKEN_NAVER) } returns userNaver
-        every { service.login("kakao", TOKEN_KAKAO) } returns userKakao
-    }
 
+        every { service.login(any()) } throws RequestInvalidException()
+        every { service.login(tokenNaver) } returns userNaver
+        every { service.login(tokenKakao) } returns userKakao
+    }
 
     init {
         describe("Login Test") {
-            context("Naver") {
-                it("Success") {
-                    mockMvc
-                        .perform(
-                            post("/v1/auth/login")
-                                .accept(MediaType.APPLICATION_JSON)
-                        )
-                        .andExpect(status().isOk)
-                        .andDo(document("auth/naver", DocSnippet("T")))
+
+            forAll(
+                row(tokenNaver, userNaver),
+                row(tokenKakao, userKakao)
+            ) { token, userInfo ->
+
+                context(token.resource) {
+                    it("Success") {
+                        val jwt = controller.login(token)
+                        val payload = jwtUtil.extractPayload(jwt.accessToken)
+
+                        payload shouldNotBe null
+                        payload!!.id shouldBe userInfo.id
+
+                        jwt.refreshToken shouldNotBe null
+                    }
+
+                    it("Fail") {
+                        shouldThrow<RequestInvalidException> {
+                            controller.login(ThirdPartyTokenVo(token.resource, "${token.token}-F"))
+                        }
+                    }
                 }
             }
 
-            context("Kakao") {
-                it("Success") {
-                    mockMvc
-                        .perform(
-                            post("/v1/auth/login")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"resource\":\"naver\"}")
-                                .accept(MediaType.APPLICATION_JSON)
-                        )
-                        .andExpect(status().isOk)
-                        .andDo(
-                            document(
-                                "auth/kakao",
-                                DocSnippet("Login"),
-                                requestFields(
-                                    fieldWithPath("resource").type(JsonFieldType.STRING).description("서드파티 제공자 구분 +\n naver|kakao")
-                                ),
-                                responseFields(
-                                    fieldWithPath("accessToken").type(JsonFieldType.STRING).description("아무튼 설명을 매우길게길게길게길게길게하면 어찌될까요 하하하하호호호후후후후 제발조미;ㄹㅇ ㅁ;니ㅓㅇ라ㅓ"),
-                                    fieldWithPath("refreshToken").type(JsonFieldType.STRING).optional().description("The user's contact details"),
-                                )
+            it("Doc") {
+                mockMvc
+                    .perform(
+                        post("/v1/auth/login")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(JsonUtil.convertToJson(tokenNaver))
+                            .accept(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().isOk)
+                    .andDo(
+                        document(
+                            "auth/login",
+                            DocSnippet("Login", "서드파티를 이용한 로그인"),
+                            requestFields(
+                                fieldWithPath("resource").type(JsonFieldType.STRING)
+                                    .description("서드파티 제공자 구분 +\n naver|kakao"),
+                                fieldWithPath("token").type(JsonFieldType.STRING).description("서드파티에서 주어진 Access Token")
+                            ),
+                            responseFields(
+                                fieldWithPath("accessToken").type(JsonFieldType.STRING)
+                                    .description("API 서버에서 사용하는 JWT 토큰"),
+                                fieldWithPath("refreshToken").type(JsonFieldType.STRING)
+                                    .description("JWT 재발급 받을 수 있는 Refresh Token"),
                             )
                         )
-                }
+                    )
             }
         }
-    }
-
-    companion object {
-        private const val TOKEN_KAKAO = "TOKEN_KAKAO"
-        private const val TOKEN_NAVER = "TOKEN_NAVER"
     }
 }
