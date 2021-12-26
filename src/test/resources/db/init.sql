@@ -27,8 +27,7 @@ CREATE TABLE `auth`
     `expire_date`   DATETIME     ,
     `create_time`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `update_time`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (`user_id`),
-    UNIQUE INDEX `refresh_token` (`refresh_token`),
+    PRIMARY KEY (`user_id`, `refresh_token`),
     CONSTRAINT `FK_auth_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
