@@ -5,31 +5,31 @@ DROP TABLE IF EXISTS game_expansion;
 
 DROP TABLE IF EXISTS games;
 DROP TABLE IF EXISTS groups;
-DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS auth;
+DROP TABLE IF EXISTS users;
 
-CREATE TABLE `auth`
-(
-    `user_id`     INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `resource`    VARCHAR(20) NULL,
-    `third_party_token` VARCHAR(100) NULL DEFAULT NULL,
-    `refresh_token` VARCHAR(100) NULL DEFAULT NULL,
-    `expire_date` DATETIME NOT NULL,
-    `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (`user_id`),
-    UNIQUE INDEX `resource_third_party_token` (`resource`, `third_party_token`),
-    UNIQUE INDEX `refresh_token` (`refresh_token`)
-);
 
 CREATE TABLE `users`
 (
-    `user_id`     INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `nickname`    VARCHAR(20) NULL DEFAULT NULL,
-    `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE INDEX `user_id` (`user_id`),
-    CONSTRAINT `FK_users_auth` FOREIGN KEY (`user_id`) REFERENCES `auth` (`user_id`) ON UPDATE RESTRICT ON DELETE RESTRICT
+    `user_id`           INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `nickname`          VARCHAR(20) NULL DEFAULT NULL,
+    `resource`          VARCHAR(10) NULL DEFAULT NULL,
+    `third_party_token` VARCHAR(100) NULL DEFAULT NULL,
+    `create_time`       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `update_time`       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`user_id`)
+);
+
+CREATE TABLE `auth`
+(
+    `user_id`       INT(10) UNSIGNED NOT NULL,
+    `refresh_token` VARCHAR(100) NOT NULL,
+    `expire_date`   DATETIME     ,
+    `create_time`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `update_time`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`user_id`),
+    UNIQUE INDEX `refresh_token` (`refresh_token`),
+    CONSTRAINT `FK_auth_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 CREATE TABLE `games`

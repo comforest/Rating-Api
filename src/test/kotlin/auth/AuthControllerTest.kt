@@ -12,6 +12,7 @@ import com.nomean.rating.api.util.JsonUtil
 import com.nomean.rating.api.util.JwtUtil
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.Spec
+import io.kotest.core.test.TestCase
 import io.kotest.data.forAll
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
@@ -26,6 +27,7 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.pos
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.util.*
 
 
 class AuthControllerTest : DocConfigure() {
@@ -53,6 +55,7 @@ class AuthControllerTest : DocConfigure() {
         every { service.login(tokenNaver) } returns userNaver
         every { service.login(tokenKakao) } returns userKakao
     }
+    private val dataList = mutableListOf<Pair<ThirdPartyTokenVo, UserInfoVo>>()
 
     init {
         describe("Login Test") {

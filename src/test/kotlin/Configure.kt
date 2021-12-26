@@ -10,6 +10,7 @@ import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
+import java.sql.ResultSet
 import javax.inject.Inject
 import javax.sql.DataSource
 
@@ -40,5 +41,17 @@ open class Configure : DescribeSpec() {
 
         connection.close()
         statement.close()
+    }
+
+    protected fun selectDB(@Language("SQL") query: String) : ResultSet{
+        val connection = ds.connection
+        val statement = connection.createStatement()
+
+        val resultSet = statement.executeQuery(query)
+
+        connection.close()
+        statement.close()
+
+        return resultSet
     }
 }
