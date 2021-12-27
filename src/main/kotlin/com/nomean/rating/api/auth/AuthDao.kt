@@ -2,16 +2,24 @@ package com.nomean.rating.api.auth
 
 import com.nomean.rating.api.auth.dto.ThirdPartyTokenVo
 import com.nomean.rating.api.auth.dto.UserInfoVo
+import org.apache.ibatis.annotations.Mapper
+import org.apache.ibatis.annotations.Param
 import java.util.*
 
+@Mapper
 interface AuthDao {
     fun createUser(token: ThirdPartyTokenVo)
-    fun deleteUser(userId: Int)
+    fun deleteUser(@Param("userId") userId: Int)
 
-    fun addRefreshToken(userId: Int, refreshToken: String, expireDate: Date)
-    fun deleteRefreshToken(userId: Int, refreshToken: String)
+    fun addRefreshToken(
+        @Param("userId") userId: Int,
+        @Param("refreshToken") refreshToken: String,
+        @Param("expireDate") expireDate: Date
+    )
+
+    fun deleteRefreshToken(@Param("userId") userId: Int, @Param("refreshToken") refreshToken: String)
     fun deleteExpiredRefreshToken()
 
-    fun getUserInfoByThirdParty(token: ThirdPartyTokenVo) : UserInfoVo?
-    fun getUserInfoByRefreshToken(token: String) : UserInfoVo?
+    fun getUserInfoByThirdParty(token: ThirdPartyTokenVo): UserInfoVo?
+    fun getUserInfoByRefreshToken(@Param("token") token: String): UserInfoVo?
 }

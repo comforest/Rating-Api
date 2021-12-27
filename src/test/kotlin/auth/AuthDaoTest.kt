@@ -126,10 +126,10 @@ class AuthDaoTest : Configure() {
             }
 
             context("Fail - Token Expire") {
-                setDB("UPDATE auth SET expire_date = NOW()")
                 for (data in dataList) {
                     val token = "R${data.first.token}"
                     it(token) {
+                        setDB("UPDATE auth SET expire_date = NOW()")
                         dao.getUserInfoByRefreshToken(token) shouldBe null
                     }
                 }
@@ -138,36 +138,42 @@ class AuthDaoTest : Configure() {
 
         it("Create New User") {
 
-            val resource = "Test-Resource"
+            val resource = "TResource"
             val token = "T-token1"
 
             dao.createUser(ThirdPartyTokenVo(resource, token))
 
-            val resultSet =
-                selectDB("SELECT resource, third_party_token, nickname FROM users where user_id=${dataList.size + 1}")
-            resultSet.next() shouldBe true
-            resultSet.getString("resource") shouldBe resource
-            resultSet.getString("third_party_token") shouldBe token
-            resultSet.getString("nickname") shouldBe null
-            resultSet.next() shouldBe false
+
+            db {
+                val resultSet =
+                    executeQuery("SELECT resource, third_party_token, nickname FROM users where user_id=${dataList.size + 1}")
+
+                resultSet.next() shouldBe true
+                resultSet.getString("resource") shouldBe resource
+                resultSet.getString("third_party_token") shouldBe token
+                resultSet.getString("nickname") shouldBe null
+                resultSet.next() shouldBe false
+            }
         }
 
         describe("Delete User") {
             // TODO : foreign key 처리
             for (id in 1..dataList.size) {
-                it("$id"){
+                it("$id") {
                     dao.deleteUser(id)
 
-                    val resultSet =
-                        selectDB("SELECT resource, third_party_token, nickname FROM users where user_id=$id")
-                    resultSet.next() shouldBe false
+                    db {
+                        val resultSet =
+                            executeQuery("SELECT resource, third_party_token, nickname FROM users where user_id=$id")
+                        resultSet.next() shouldBe false
+                    }
                 }
             }
         }
 
         describe("Add Refresh Token") {
             context("Second Refresh Token") {
-                for (i in 2..dataList.size) {
+                for (i in 2 until dataList.size) {
                     it("$i") {
                         val auth = dataList[i].first
                         val user = dataList[i].second
@@ -176,15 +182,17 @@ class AuthDaoTest : Configure() {
 
                         dao.addRefreshToken(user.id, "R2${auth.token}", expireDate)
 
-                        val resultSet =
-                            selectDB("SELECT user_id, refresh_token, expire_date FROM auth where user_id=${user.id}")
-                        resultSet.next() shouldBe true
-                        resultSet.getString("refresh_token") shouldBe "R${auth.token}"
-                        resultSet.getString("expireDate") shouldNotBe null
-                        resultSet.next() shouldBe true
-                        resultSet.getString("refresh_token") shouldBe "R2${auth.token}"
-                        resultSet.getString("expireDate") shouldBe expireDate
-                        resultSet.next() shouldBe false
+                        db {
+                            val resultSet =
+                                executeQuery("SELECT user_id, refresh_token, expire_date FROM auth where user_id=${user.id}")
+                            resultSet.next() shouldBe true
+                            resultSet.getString("refresh_token") shouldBe "R${auth.token}"
+                            resultSet.getDate("expire_date") shouldNotBe null
+                            resultSet.next() shouldBe true
+                            resultSet.getString("refresh_token") shouldBe "R2${auth.token}"
+                            resultSet.getTimestamp("expire_date").time shouldBe expireDate.time
+                            resultSet.next() shouldBe false
+                        }
                     }
                 }
             }
@@ -198,18 +206,20 @@ class AuthDaoTest : Configure() {
 
                     dao.addRefreshToken(user.id, "R3${auth.token}", expireDate)
 
-                    val resultSet =
-                        selectDB("SELECT user_id, refresh_token, expire_date FROM auth where user_id=${user.id}")
-                    resultSet.next() shouldBe true
-                    resultSet.getString("refresh_token") shouldBe "R${auth.token}"
-                    resultSet.getString("expireDate") shouldNotBe null
-                    resultSet.next() shouldBe true
-                    resultSet.getString("refresh_token") shouldBe "R2${auth.token}"
-                    resultSet.getString("expireDate") shouldNotBe null
-                    resultSet.next() shouldBe true
-                    resultSet.getString("refresh_token") shouldBe "R3${auth.token}"
-                    resultSet.getString("expireDate") shouldBe expireDate
-                    resultSet.next() shouldBe false
+                    db {
+                        val resultSet =
+                            executeQuery("SELECT user_id, refresh_token, expire_date FROM auth where user_id=${user.id}")
+                        resultSet.next() shouldBe true
+                        resultSet.getString("refresh_token") shouldBe "R${auth.token}"
+                        resultSet.getDate("expire_date") shouldNotBe null
+                        resultSet.next() shouldBe true
+                        resultSet.getString("refresh_token") shouldBe "R2${auth.token}"
+                        resultSet.getDate("expire_date") shouldNotBe null
+                        resultSet.next() shouldBe true
+                        resultSet.getString("refresh_token") shouldBe "R3${auth.token}"
+                        resultSet.getTimestamp("expire_date").time shouldBe expireDate.time
+                        resultSet.next() shouldBe false
+                    }
                 }
             }
         }
@@ -224,21 +234,24 @@ class AuthDaoTest : Configure() {
                     it("R${auth.token}") {
                         dao.deleteRefreshToken(user.id, "R${auth.token}")
 
-                        val resultSet = selectDB("SELECT * FROM auth where refresh_token = 'R${auth.token}'")
-                        resultSet.next() shouldBe false
+                        db {
+                            val resultSet = executeQuery("SELECT * FROM auth where refresh_token = 'R${auth.token}'")
+                            resultSet.next() shouldBe false
+                        }
                     }
                 }
             }
 
-            context("Not Match userId - token"){
+            context("Not Match userId - token") {
                 for (data in dataList) {
                     val auth = data.first
 
                     it("R${auth.token}") {
                         dao.deleteRefreshToken(0, "R${auth.token}")
-
-                        val resultSet = selectDB("SELECT * FROM auth where refresh_token = 'R${auth.token}'")
-                        resultSet.next() shouldBe false
+                        db {
+                            val resultSet = executeQuery("SELECT * FROM auth where refresh_token = 'R${auth.token}'")
+                            resultSet.next() shouldBe true
+                        }
                     }
                 }
             }
@@ -246,15 +259,17 @@ class AuthDaoTest : Configure() {
 
 
         it("Delete Refresh Token Expired") {
-            setDB("UPDATE auth SET expire_date = NOW() where userId <= 3")
+            setDB("UPDATE auth SET expire_date = NOW() where user_id <= 3")
             dao.deleteExpiredRefreshToken()
 
-            val resultSet = selectDB("SELECT user_id FROM auth")
-            var hasNext = resultSet.next()
-            hasNext  shouldBe true
-            while (hasNext){
-                resultSet.getInt("user_id") shouldNotBeLessThanOrEqual 3
-                hasNext = resultSet.next()
+            db {
+                val resultSet = executeQuery("SELECT user_id FROM auth")
+                var hasNext = resultSet.next()
+                hasNext shouldBe true
+                while (hasNext) {
+                    resultSet.getInt("user_id") shouldNotBeLessThanOrEqual 3
+                    hasNext = resultSet.next()
+                }
             }
         }
 

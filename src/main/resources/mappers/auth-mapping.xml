@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nomean.rating.api.auth.AuthDao">
+    <resultMap id="userInfo" type="com.nomean.rating.api.auth.dto.UserInfoVo">
+        <id property="id" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+    </resultMap>
+
+    <select id="getUserInfoByThirdParty" resultMap="userInfo">
+        SELECT user_id, nickname
+        from users
+        where resource = #{resource}
+          and third_party_token = #{token}
+    </select>
+
+
+    <select id="getUserInfoByRefreshToken" resultMap="userInfo">
+        SELECT u.user_id, u.nickname
+        from users u
+                 join auth a using (user_id)
+        where a.refresh_token = #{token}
+          and TIMESTAMPDIFF(MINUTE, now(), expire_date) > 0
+    </select>
+
+    <insert id="createUser">
+        INSERT INTO users(resource, third_party_token)
+        VALUES (#{resource}, #{token})
+    </insert>
+
+    <delete id="deleteUser">
+        DELETE FROM auth WHERE user_id = #{userId};
+        DELETE FROM users WHERE user_id = #{userId};
+    </delete>
+
+    <insert id="addRefreshToken">
+        INSERT INTO auth(user_id, refresh_token, expire_date) VALUES (#{userId}, #{refreshToken}, #{expireDate})
+    </insert>
+
+    <delete id="deleteRefreshToken">
+        DELETE FROM auth WHERE user_id = #{userId} and refresh_token = #{refreshToken};
+    </delete>
+
+    <delete id="deleteExpiredRefreshToken">
+        DELETE FROM auth WHERE TIMESTAMPDIFF(MINUTE, now(), expire_date) &lt;= 0
+    </delete>
+
+
+</mapper>
