@@ -3,10 +3,7 @@ package com.nomean.rating.api.auth
 import com.nomean.rating.api.auth.dto.AccessTokenVo
 import com.nomean.rating.api.auth.dto.ThirdPartyTokenVo
 import com.nomean.rating.api.util.JwtUtil
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/v1/auth")

@@ -8,7 +8,7 @@
        http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
 
-    <mybatis-spring:scan base-package="com.nomean.rating.api" />
+    <mybatis-spring:scan base-package="com.nomean.rating.api" annotation="org.apache.ibatis.annotations.Mapper" />
 
     <context:component-scan base-package="com.nomean.rating.api">
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>

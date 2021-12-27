@@ -1,4 +1,4 @@
-package auth
+package com.nomean.rating.api.auth
 
 import Configure
 import com.nomean.rating.api.auth.AuthService

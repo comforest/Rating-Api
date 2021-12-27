@@ -1,18 +1,15 @@
-package auth
+package com.nomean.rating.api.auth
 
 import DocConfigure
 import DocSnippet
 import com.nomean.rating.api.RequestInvalidException
-import com.nomean.rating.api.auth.AuthController
-import com.nomean.rating.api.auth.AuthService
-import com.nomean.rating.api.auth.dto.AccessTokenVo
 import com.nomean.rating.api.auth.dto.ThirdPartyTokenVo
 import com.nomean.rating.api.auth.dto.UserInfoVo
 import com.nomean.rating.api.util.JsonUtil
 import com.nomean.rating.api.util.JwtUtil
+import io.kotest.assertions.any
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.Spec
-import io.kotest.core.test.TestCase
 import io.kotest.data.forAll
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
@@ -27,7 +24,6 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.pos
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.util.*
 
 
 class AuthControllerTest : DocConfigure() {
@@ -95,7 +91,7 @@ class AuthControllerTest : DocConfigure() {
                     .andExpect(status().isOk)
                     .andDo(
                         document(
-                            "auth/login",
+                            "com/nomean/rating/api/auth/login",
                             DocSnippet("Login", "서드파티를 이용한 로그인"),
                             requestFields(
                                 fieldWithPath("resource").type(JsonFieldType.STRING)
