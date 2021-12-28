@@ -1,4 +1,5 @@
 import com.nomean.rating.api.game.GameDao
+import com.nomean.rating.api.game.GameMapping
 import com.nomean.rating.api.game.GameVO
 import io.kotest.core.test.TestCase
 import io.kotest.core.test.TestResult
@@ -22,7 +23,7 @@ import javax.sql.DataSource
 class GameTest : DocConfigure() {
 
     @Autowired
-    private lateinit var repository: GameDao
+    private lateinit var repository: GameMapping
     private val answer = listOf(
         GameVO(1, "game1", 1, 2),
         GameVO(2, "game2", 2, 5),

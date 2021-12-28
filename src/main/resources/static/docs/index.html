@@ -507,12 +507,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>accessToken <span class="red">*</span></code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">아무튼 설명을 매우길게길게길게길게길게하면 어찌될까요 하하하하호호호후후후후 제발조미;ㄹㅇ ㅁ;니ㅓㅇ라ㅓ</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API 서버에서 사용하는 JWT 토큰</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>refreshToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>refreshToken <span class="red">*</span></code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The user&#8217;s contact details</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JWT 재발급 받을 수 있는 Refresh Token</p></td>
 </tr>
 </tbody>
 </table>
@@ -536,11 +536,11 @@ Content-Length: 42
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 211
+Content-Length: 50
 
 {
-  "accessToken" : "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJUZXN0IiwiZXhwIjoxNjQwMTgwMTAwLCJpZCI6MX0.ZWd55dEKFOmUidoHy7n4kIalCeZNB48g81H2FN9Jg_sCseawp5OZ9cSnS9cHngPo-HZtAB72Fl4kQReVzieMxg",
-  "refreshToken" : null
+  "accessToken" : "",
+  "refreshToken" : ""
 }</code></pre>
 </div>
 </div>

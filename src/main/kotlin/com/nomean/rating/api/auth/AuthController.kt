@@ -11,7 +11,7 @@ class AuthController (private val service: AuthService, private val jwtUtil: Jwt
 
     @PostMapping("/login")
     fun login(@RequestBody thirdPartyTokenVo: ThirdPartyTokenVo): AccessTokenVo {
-        val userInfo = service.login(thirdPartyTokenVo)
+        //val userInfo = service.login(thirdPartyTokenVo)
 
         return AccessTokenVo("", "")
     }
